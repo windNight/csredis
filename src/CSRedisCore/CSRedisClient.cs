@@ -1,5 +1,5 @@
 ﻿using Newtonsoft.Json;
-using SafeObjectPool;
+using CSRedis.Internal.ObjectPool;
 using System;
 using System.Collections.Generic;
 using System.Collections.Concurrent;
@@ -29,9 +29,6 @@ namespace CSRedis
         internal bool IsMultiNode => Nodes.Count > 1 && SentinelManager == null;
         private object NodesLock = new object();
         public ConcurrentDictionary<ushort, ushort> SlotCache = new ConcurrentDictionary<ushort, ushort>();
-
-        private int AutoStartPipeCommitCount { get => Nodes.First().Value.AutoStartPipeCommitCount; set => Nodes.Values.ToList().ForEach(p => p.AutoStartPipeCommitCount = value); }
-        private int AutoStartPipeCommitTimeout { get => Nodes.First().Value.AutoStartPipeCommitTimeout; set => Nodes.Values.ToList().ForEach(p => p.AutoStartPipeCommitTimeout = value); }
 
         private Func<JsonSerializerSettings> JsonSerializerSettings = () =>
         {
@@ -486,6 +483,7 @@ namespace CSRedis
                     catch (Exception ex2)
                     {
                         ex = ex2;
+                        if (pool.UnavailableException != null) throw ex;
                         var isPong = false;
                         try
                         {
@@ -554,7 +552,7 @@ namespace CSRedis
                 {
                     if (Nodes.TryGetValue(nodeKey, out movedPool) == false)
                     {
-                        var connectionString = $"{redirect.endpoint},password={pool._policy._password},defaultDatabase={pool._policy._database},poolsize={pool._policy.PoolSize},connectTimeout={pool._policy._connectTimeout},preheat=false,ssl={(pool._policy._ssl ? "true" : "false")},writeBuffer={pool._policy._writebuffer},tryit={pool._policy._tryit},name={pool._policy._clientname},prefix={pool._policy.Prefix}";
+                        var connectionString = pool._policy.BuildConnectionString(redirect.endpoint);
                         movedPool = new RedisClientPool(connectionString, client => { });
                         if (this.TryAddNode(nodeKey, movedPool) == false)
                         {
@@ -4302,7 +4300,7 @@ return 0", _name, _value)?.ToString() == "1";
         public void Dispose() => this.Unlock();
     }
 
-    public enum KeyType { None, String, List, Set, ZSet, Hash }
+    public enum KeyType { None, String, List, Set, ZSet, Hash, Stream }
     public enum InfoSection { Server, Clients, Memory, Persistence, Stats, Replication, CPU, CommandStats, Cluster, Keyspace }
     public enum ClientKillType { normal, slave, pubsub }
 }

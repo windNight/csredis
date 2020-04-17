@@ -1,4 +1,4 @@
-﻿using SafeObjectPool;
+﻿using CSRedis.Internal.ObjectPool;
 using System;
 using System.Collections.Generic;
 using System.Collections.Concurrent;
@@ -89,18 +89,15 @@ namespace CSRedis
         public string Key => _policy.Key;
         public string Prefix => _policy.Prefix;
         public Encoding Encoding { get; set; } = new UTF8Encoding(false);
-
-        internal int AutoStartPipeCommitCount { get; set; } = 10;
-        internal int AutoStartPipeCommitTimeout { get; set; } = 1000;
     }
 
     public class RedisClientPoolPolicy : IPolicy<RedisClient>
     {
 
         internal RedisClientPool _pool;
-        internal int _port = 6379, _database = 0, _writebuffer = 10240, _tryit = 0, _connectTimeout = 5000, _syncTimeout = 10000;
+        internal int _port = 6379, _database = 0, _tryit = 0, _connectTimeout = 5000, _syncTimeout = 10000;
         internal string _ip = "127.0.0.1", _password = "", _clientname = "";
-        internal bool _ssl = false, _testCluster = true;
+        internal bool _ssl = false, _testCluster = true, _asyncPipeline = false;
         internal int _preheat = 5;
         internal string Key => $"{_ip}:{_port}/{_database}";
         internal string Prefix { get; set; }
@@ -112,7 +109,16 @@ namespace CSRedis
         public TimeSpan IdleTimeout { get; set; } = TimeSpan.FromSeconds(20);
         public int AsyncGetCapacity { get; set; } = 100000;
         public bool IsThrowGetTimeoutException { get; set; } = true;
+        public bool IsAutoDisposeWithSystem { get; set; } = true;
         public int CheckAvailableInterval { get; set; } = 5;
+
+        internal string BuildConnectionString(string endpoint)
+        {
+            return $"{endpoint},password={_password},defaultDatabase={_database},poolsize={PoolSize}," +
+                $"connectTimeout={_connectTimeout},syncTimeout={_syncTimeout},idletimeout={(int)IdleTimeout.TotalMilliseconds}," +
+                $"preheat=false,ssl={(_ssl ? "true" : "false")},tryit={_tryit},name={_clientname},prefix={Prefix}," + 
+                $"autodispose={(IsAutoDisposeWithSystem ? "true" : "false")},asyncpipeline={(_asyncPipeline ? "true" : "false")}";
+        }
 
         internal void SetHost(string host)
         {
@@ -201,9 +207,6 @@ namespace CSRedis
                         case "ssl":
                             _ssl = kv.Length > 1 ? kv[1].ToLower().Trim() == "true" : false;
                             break;
-                        case "writebuffer":
-                            _writebuffer = int.TryParse(kv.Length > 1 ? kv[1].Trim() : "10240", out _writebuffer) ? _writebuffer : 10240;
-                            break;
                         case "preheat":
                             var kvtrim = kv.Length > 1 ? kv[1].ToLower().Trim() : null;
                             _preheat = kvtrim == "true" ? -1 : (int.TryParse(kvtrim, out _preheat) ? _preheat : 0);
@@ -226,6 +229,12 @@ namespace CSRedis
                         case "testcluster":
                             _testCluster = kv.Length > 1 ? kv[1].ToLower().Trim() == "true" : true;
                             break;
+                        case "autodispose":
+                            IsAutoDisposeWithSystem = kv.Length > 1 ? kv[1].ToLower().Trim() == "true" : true;
+                            break;
+                        case "asyncpipeline":
+                            _asyncPipeline = kv.Length > 1 ? kv[1].ToLower().Trim() == "true" : true;
+                            break;
                     }
                 }
 
@@ -247,13 +256,13 @@ namespace CSRedis
             RedisClient client = null;
             if (IPAddress.TryParse(_ip, out var tryip))
             {
-                client = new RedisClient(new IPEndPoint(tryip, _port), _ssl, 100, _writebuffer);
+                client = new RedisClient(new IPEndPoint(tryip, _port), _ssl);
             }
             else
             {
                 var ips = Dns.GetHostAddresses(_ip);
                 if (ips.Length == 0) throw new Exception($"无法解析“{_ip}”");
-                client = new RedisClient(_ip, _port, _ssl, 100, _writebuffer);
+                client = new RedisClient(_ip, _port, _ssl);
             }
             client.Connected += (s, o) =>
             {
@@ -267,7 +276,7 @@ namespace CSRedis
         {
             if (obj != null)
             {
-                if (obj.IsConnected) try { obj.Quit(); } catch { }
+                //if (obj.IsConnected) try { obj.Quit(); } catch { } 此行会导致，服务器主动断开后，执行该命令超时停留10-20秒
                 try { obj.Dispose(); } catch { }
             }
         }
@@ -345,9 +354,10 @@ namespace CSRedis
                 initConns.Add(conn);
                 pool.Policy.OnCheckAvailable(conn);
             }
-            catch
+            catch (Exception ex)
             {
                 initTestOk = false; //预热一次失败，后面将不进行
+                pool.SetUnavailable(ex);
             }
             for (var a = 1; initTestOk && a < minPoolSize; a += 10)
             {
