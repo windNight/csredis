@@ -7,7 +7,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace CSRedis.Internal.ObjectPool
+namespace System
 {
 
     /// <summary>
@@ -249,7 +249,7 @@ namespace CSRedis.Internal.ObjectPool
                 Console.CancelKeyPress += (s1, e1) =>
                 {
                     if (e1.Cancel) return;
-                    if (Policy.IsAutoDisposeWithSystem) 
+                    if (Policy.IsAutoDisposeWithSystem)
                         running = false;
                 };
             }
@@ -352,8 +352,7 @@ namespace CSRedis.Internal.ObjectPool
             return obj;
         }
 
-#if net40
-#else
+#if !net40
         async public Task<Object<T>> GetAsync()
         {
 

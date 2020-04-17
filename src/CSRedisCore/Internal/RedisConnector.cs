@@ -65,8 +65,7 @@ namespace CSRedis.Internal
             return _redisSocket.Connected;
         }
 
-#if net40
-#else
+#if !net40
         public Task<bool> ConnectAsync()
         {
             return _redisSocket.ConnectAsync(_endPoint);
@@ -88,8 +87,8 @@ namespace CSRedis.Internal
                 //if (_autoPipeline.IsEnabled)
                 //	return _autoPipeline.EnqueueSync(command);
 
-                //Console.WriteLine("--------------Call " + command.ToString());
-                _io.Write(_io.Writer.Prepare(command));
+                //_io.Writer.Write(command, _io.Stream);
+				_io.Write(_io.Writer.Prepare(command));
                 return command.Parse(_io.Reader);
             }
             catch (IOException)
@@ -105,15 +104,14 @@ namespace CSRedis.Internal
             }
         }
 
-#if net40
-#else
+#if !net40
         async public Task<T> CallAsync<T>(RedisCommand<T> command)
         {
             //if (_autoPipeline.IsEnabled)
             //	return _autoPipeline.EnqueueAsync(command);
 
-            //Console.WriteLine("--------------CallAsync");
-            await _io.WriteAsync(command);
+            //await _io.Writer.WriteAsync(command, _io.Stream);
+			await _io.WriteAsync(command);
             //_io.Stream.BeginRead()
             return command.Parse(_io.Reader);
         }
@@ -125,8 +123,8 @@ namespace CSRedis.Internal
 
             try
             {
-                //Console.WriteLine("--------------Write");
-                _io.Write(_io.Writer.Prepare(command));
+                //_io.Writer.Write(command, _io.Stream);
+				_io.Write(_io.Writer.Prepare(command));
             }
             catch (IOException)
             {

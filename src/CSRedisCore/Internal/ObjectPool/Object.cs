@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading;
+﻿using System.Threading;
 
-namespace CSRedis.Internal.ObjectPool
+namespace System
 {
 
     public class Object<T> : IDisposable

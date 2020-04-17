@@ -1,0 +1,89 @@
+﻿using CSRedis.Internal.Commands;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+#if !net40
+using System.Threading.Tasks;
+#endif
+
+namespace CSRedis
+{
+    public partial class RedisClient
+    {
+        #region HyperLogLog
+
+        /// <summary>
+        /// Adds the specified elements to the specified HyperLogLog.
+        /// </summary>
+        /// <param name="key">Key to update</param>
+        /// <param name="elements">Elements to add</param>
+        /// <returns>1 if at least 1 HyperLogLog internal register was altered. 0 otherwise.</returns>
+        public virtual bool PfAdd(string key, params object[] elements)
+        {
+            return Write(RedisCommands.PfAdd(key, elements));
+        }
+
+        /// <summary>
+        /// Return the approximated cardinality of the set(s) observed by the HyperLogLog at key(s)
+        /// </summary>
+        /// <param name="keys">One or more HyperLogLog keys to examine</param>
+        /// <returns>Approximated number of unique elements observed via PFADD</returns>
+        public virtual long PfCount(params string[] keys)
+        {
+            return Write(RedisCommands.PfCount(keys));
+        }
+
+        /// <summary>
+        /// Merge N different HyperLogLogs into a single key.
+        /// </summary>
+        /// <param name="destKey">Where to store the merged HyperLogLogs</param>
+        /// <param name="sourceKeys">The HyperLogLogs keys that will be combined</param>
+        /// <returns>Status code</returns>
+        public virtual string PfMerge(string destKey, params string[] sourceKeys)
+        {
+            return Write(RedisCommands.PfMerge(destKey, sourceKeys));
+        }
+
+        #endregion
+
+#if !net40
+
+        #region HyperLogLog
+
+        /// <summary>
+        /// Adds the specified elements to the specified HyperLogLog.
+        /// </summary>
+        /// <param name="key">Key to update</param>
+        /// <param name="elements">Elements to add</param>
+        /// <returns>1 if at least 1 HyperLogLog internal register was altered. 0 otherwise.</returns>
+        public virtual async Task<bool> PfAddAsync(string key, params object[] elements)
+        {
+            return await WriteAsync(RedisCommands.PfAdd(key, elements));
+        }
+
+        /// <summary>
+        /// Return the approximated cardinality of the set(s) observed by the HyperLogLog at key(s)
+        /// </summary>
+        /// <param name="keys">One or more HyperLogLog keys to examine</param>
+        /// <returns>Approximated number of unique elements observed via PFADD</returns>
+        public virtual async Task<long> PfCountAsync(params string[] keys)
+        {
+            return await WriteAsync(RedisCommands.PfCount(keys));
+        }
+
+        /// <summary>
+        /// Merge N different HyperLogLogs into a single key.
+        /// </summary>
+        /// <param name="destKey">Where to store the merged HyperLogLogs</param>
+        /// <param name="sourceKeys">The HyperLogLogs keys that will be combined</param>
+        /// <returns>Status code</returns>
+        public virtual async Task<string> PfMergeAsync(string destKey, params string[] sourceKeys)
+        {
+            return await WriteAsync(RedisCommands.PfMerge(destKey, sourceKeys));
+        }
+
+        #endregion
+#endif
+
+    }
+}

@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CSRedis.Internal.ObjectPool
+namespace System
 {
-
     public class DefaultPolicy<T> : IPolicy<T>
     {
 
@@ -37,8 +36,7 @@ namespace CSRedis.Internal.ObjectPool
             OnGetObject?.Invoke(obj);
         }
 
-#if net40
-#else
+#if !net40
         public Task OnGetAsync(Object<T> obj)
         {
             //Console.WriteLine("GetAsync: " + obj);

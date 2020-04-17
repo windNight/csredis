@@ -1,5 +1,4 @@
-﻿using CSRedis.Internal.ObjectPool;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.Concurrent;
 using System.Net;
@@ -89,7 +88,11 @@ namespace CSRedis
         public string Key => _policy.Key;
         public string Prefix => _policy.Prefix;
         public Encoding Encoding { get; set; } = new UTF8Encoding(false);
+
+        internal int AutoStartPipeCommitCount { get; set; } = 10;
+        internal int AutoStartPipeCommitTimeout { get; set; } = 1000;
     }
+
 
     public class RedisClientPoolPolicy : IPolicy<RedisClient>
     {
@@ -116,13 +119,14 @@ namespace CSRedis
         {
             return $"{endpoint},password={_password},defaultDatabase={_database},poolsize={PoolSize}," +
                 $"connectTimeout={_connectTimeout},syncTimeout={_syncTimeout},idletimeout={(int)IdleTimeout.TotalMilliseconds}," +
-                $"preheat=false,ssl={(_ssl ? "true" : "false")},tryit={_tryit},name={_clientname},prefix={Prefix}," + 
+                $"preheat=false,ssl={(_ssl ? "true" : "false")},tryit={_tryit},name={_clientname},prefix={Prefix}," +
                 $"autodispose={(IsAutoDisposeWithSystem ? "true" : "false")},asyncpipeline={(_asyncPipeline ? "true" : "false")}";
         }
 
         internal void SetHost(string host)
         {
-            if (string.IsNullOrEmpty(host?.Trim())) {
+            if (string.IsNullOrEmpty(host?.Trim()))
+            {
                 _ip = "127.0.0.1";
                 _port = 6379;
                 return;
@@ -205,7 +209,7 @@ namespace CSRedis
                             PoolSize = int.TryParse(kv.Length > 1 ? kv[1].Trim() : "0", out var poolsize) == false || poolsize <= 0 ? 50 : poolsize;
                             break;
                         case "ssl":
-                            _ssl = kv.Length > 1 ? kv[1].ToLower().Trim() == "true" : false;
+                            _ssl = kv.Length > 1 && kv[1].ToLower().Trim() == "true";
                             break;
                         case "preheat":
                             var kvtrim = kv.Length > 1 ? kv[1].ToLower().Trim() : null;
@@ -227,13 +231,13 @@ namespace CSRedis
                             IdleTimeout = TimeSpan.FromMilliseconds(int.TryParse(kv.Length > 1 ? kv[1].Trim() : "0", out var idleTimeout) == false || idleTimeout <= 0 ? 0 : idleTimeout);
                             break;
                         case "testcluster":
-                            _testCluster = kv.Length > 1 ? kv[1].ToLower().Trim() == "true" : true;
+                            _testCluster = kv.Length <= 1 || kv[1].ToLower().Trim() == "true";
                             break;
                         case "autodispose":
-                            IsAutoDisposeWithSystem = kv.Length > 1 ? kv[1].ToLower().Trim() == "true" : true;
+                            IsAutoDisposeWithSystem = kv.Length <= 1 || kv[1].ToLower().Trim() == "true";
                             break;
                         case "asyncpipeline":
-                            _asyncPipeline = kv.Length > 1 ? kv[1].ToLower().Trim() == "true" : true;
+                            _asyncPipeline = kv.Length <= 1 || kv[1].ToLower().Trim() == "true";
                             break;
                     }
                 }
@@ -276,8 +280,23 @@ namespace CSRedis
         {
             if (obj != null)
             {
+                if (obj.IsConnected)
+                {
+                    try
+                    {
+                        obj.Quit();
+                    }
+                    catch { }
+                }
                 //if (obj.IsConnected) try { obj.Quit(); } catch { } 此行会导致，服务器主动断开后，执行该命令超时停留10-20秒
-                try { obj.Dispose(); } catch { }
+                try
+                {
+                    obj.Dispose();
+                }
+                catch
+                {
+
+                }
             }
         }
 
@@ -300,9 +319,8 @@ namespace CSRedis
                 }
             }
         }
-#if net40
-#else
-        async public Task OnGetAsync(Object<RedisClient> obj)
+#if !net40 
+        public async Task OnGetAsync(Object<RedisClient> obj)
         {
             if (_pool.Encoding != obj.Value.Encoding) obj.Value.Encoding = _pool.Encoding;
             if (_pool.IsAvailable)

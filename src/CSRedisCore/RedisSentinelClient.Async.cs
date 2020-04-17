@@ -5,8 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-#if net40
-#else
+#if !net40
 namespace CSRedis
 {
     public partial class RedisSentinelClient

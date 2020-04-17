@@ -16,8 +16,7 @@ namespace CSRedis.Internal.IO
         int SendTimeout { get; set; }
 
         void Connect(EndPoint endpoint, int timeout);
-#if net40
-#else
+#if !net40
         Task<bool> ConnectAsync(EndPoint endpoint);
 #endif
 
