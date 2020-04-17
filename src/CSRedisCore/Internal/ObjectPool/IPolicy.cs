@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+#if !net40 
 using System.Threading.Tasks;
+#endif
 
 namespace System
 {
@@ -70,8 +72,7 @@ namespace System
         /// </summary>
         /// <param name="obj">资源对象</param>
         void OnGet(Object<T> obj);
-#if net40
-#else
+#if !net40 
         /// <summary>
         /// 从对象池获取对象成功的时候触发，通过该方法统计或初始化对象
         /// </summary>

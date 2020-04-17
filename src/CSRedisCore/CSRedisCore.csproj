@@ -4,7 +4,7 @@
       net40;
       net45;
       netstandard2.0;
-      <!--netstandard2.1;-->
+      netstandard2.1;
     </TargetFrameworks>
     <AssemblyName>CSRedisCore</AssemblyName>
     <PackageId>CSRedisCore</PackageId>
@@ -24,12 +24,7 @@
     <SignAssembly>true</SignAssembly>
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\CSRedis.CSRedisCore.xml</DocumentationFile>
   </PropertyGroup>
-  <ItemGroup>
-    <Compile Remove="RedisClient.Scripting.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="RedisClient\Impl\RedisClient.Scripting.cs" />
-  </ItemGroup>
+ 
 
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />

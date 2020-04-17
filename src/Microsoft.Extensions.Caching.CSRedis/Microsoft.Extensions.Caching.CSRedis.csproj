@@ -1,10 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;
-<!--
-	netcoreapp31;netcoreapp30;netcoreapp22;netcoreapp21
-	-->
-	</TargetFrameworks>
+    <TargetFrameworks>
+      netstandard2.0;
+      netcoreapp31;
+      netcoreapp30;
+      netcoreapp22;
+      netcoreapp21
+
+    </TargetFrameworks>
     <AssemblyName>Caching.CSRedis</AssemblyName>
     <PackageId>Caching.CSRedis</PackageId>
     <RootNamespace>Caching.CSRedis</RootNamespace>
@@ -20,7 +23,7 @@
     <DelaySign>false</DelaySign>
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\Microsoft.Extensions.Caching.CSRedis.xml</DocumentationFile>
   </PropertyGroup>
-   
+
   <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp31' or '$(TargetFramework)' == 'netstandard2.0'">
     <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="3.1.2" />
   </ItemGroup>

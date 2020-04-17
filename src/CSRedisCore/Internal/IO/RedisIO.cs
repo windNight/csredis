@@ -5,7 +5,9 @@ using System.Linq;
 using System.Net.Security;
 using System.Net.Sockets;
 using System.Text;
+#if !net40
 using System.Threading.Tasks;
+#endif
 
 namespace CSRedis.Internal.IO
 {
@@ -19,7 +21,7 @@ namespace CSRedis.Internal.IO
 
         public Stream Stream => GetOrThrow(_stream);
         public RedisWriter Writer => _writer;
-        public RedisReader Reader => GetOrThrow(_reader); 
+        public RedisReader Reader => GetOrThrow(_reader);
         public Encoding Encoding { get; set; }
         public RedisPipeline Pipeline => GetOrThrow(_pipeline);
         public bool IsPipelined => _pipeline == null ? false : _pipeline.Active;
@@ -44,9 +46,8 @@ namespace CSRedis.Internal.IO
         }
 
 
-#if net40
-#else
-        async public Task<int> WriteAsync(RedisCommand command)
+#if !net40
+        public async Task<int> WriteAsync(RedisCommand command)
         {
             var data = _writer.Prepare(command);
             await Stream.WriteAsync(data, 0, data.Length);

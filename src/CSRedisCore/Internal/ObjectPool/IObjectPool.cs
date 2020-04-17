@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+#if !net40 
 using System.Threading.Tasks;
+#endif
 
 namespace System
 {
@@ -44,8 +46,7 @@ namespace System
         /// <returns></returns>
         Object<T> Get(TimeSpan? timeout = null);
 
-#if net40
-#else
+#if !net40 
         /// <summary>
         /// 获取资源
         /// </summary>
