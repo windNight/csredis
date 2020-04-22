@@ -221,7 +221,7 @@ namespace CSRedis
         /// <param name="key">不含prefix前辍</param>
         /// <param name="fields">字段</param>
         /// <returns></returns>
-        async public Task<long> HDelAsync(string key, params string[] fields) => fields == null || fields.Any() == false ? 0 :
+        public async Task<long> HDelAsync(string key, params string[] fields) => fields == null || fields.Any() == false ? 0 :
             await ExecuteScalarAsync(key, (c, k) => c.Value.HDelAsync(k, fields));
         /// <summary>
         /// 查看哈希表 key 中，指定的字段是否存在
@@ -244,7 +244,7 @@ namespace CSRedis
         /// <param name="key">不含prefix前辍</param>
         /// <param name="field">字段</param>
         /// <returns></returns>
-        async public Task<T> HGetAsync<T>(string key, string field) => this.DeserializeRedisValueInternal<T>(await ExecuteScalarAsync(key, (c, k) => c.Value.HGetBytesAsync(k, field)));
+        public async Task<T> HGetAsync<T>(string key, string field) => this.DeserializeRedisValueInternal<T>(await ExecuteScalarAsync(key, (c, k) => c.Value.HGetBytesAsync(k, field)));
         /// <summary>
         /// 获取在哈希表中指定 key 的所有字段和值
         /// </summary>
@@ -257,7 +257,7 @@ namespace CSRedis
         /// <typeparam name="T">byte[] 或其他类型</typeparam>
         /// <param name="key">不含prefix前辍</param>
         /// <returns></returns>
-        async public Task<Dictionary<string, T>> HGetAllAsync<T>(string key) => this.DeserializeRedisValueDictionaryInternal<string, T>(await ExecuteScalarAsync(key, (c, k) => c.Value.HGetAllBytesAsync(k)));
+        public async Task<Dictionary<string, T>> HGetAllAsync<T>(string key) => this.DeserializeRedisValueDictionaryInternal<string, T>(await ExecuteScalarAsync(key, (c, k) => c.Value.HGetAllBytesAsync(k)));
         /// <summary>
         /// 为哈希表 key 中的指定字段的整数值加上增量 increment
         /// </summary>
@@ -292,7 +292,7 @@ namespace CSRedis
         /// <param name="key">不含prefix前辍</param>
         /// <param name="fields">字段</param>
         /// <returns></returns>
-        async public Task<string[]> HMGetAsync(string key, params string[] fields) => fields == null || fields.Any() == false ? new string[0] :
+        public async Task<string[]> HMGetAsync(string key, params string[] fields) => fields == null || fields.Any() == false ? new string[0] :
             await ExecuteScalarAsync(key, (c, k) => c.Value.HMGetAsync(k, fields));
         /// <summary>
         /// 获取存储在哈希表中多个字段的值
@@ -301,7 +301,7 @@ namespace CSRedis
         /// <param name="key">不含prefix前辍</param>
         /// <param name="fields">一个或多个字段</param>
         /// <returns></returns>
-        async public Task<T[]> HMGetAsync<T>(string key, params string[] fields) => fields == null || fields.Any() == false ? new T[0] :
+        public async Task<T[]> HMGetAsync<T>(string key, params string[] fields) => fields == null || fields.Any() == false ? new T[0] :
             this.DeserializeRedisValueArrayInternal<T>(await ExecuteScalarAsync(key, (c, k) => c.Value.HMGetBytesAsync(k, fields)));
         /// <summary>
         /// 同时将多个 field-value (域-值)对设置到哈希表 key 中
@@ -368,7 +368,7 @@ namespace CSRedis
         /// <typeparam name="T">byte[] 或其他类型</typeparam>
         /// <param name="key">不含prefix前辍</param>
         /// <returns></returns>
-        async public Task<T[]> HValsAsync<T>(string key) => this.DeserializeRedisValueArrayInternal<T>(await ExecuteScalarAsync(key, (c, k) => c.Value.HValsBytesAsync(k)));
+        public async Task<T[]> HValsAsync<T>(string key) => this.DeserializeRedisValueArrayInternal<T>(await ExecuteScalarAsync(key, (c, k) => c.Value.HValsBytesAsync(k)));
         /// <summary>
         /// 迭代哈希表中的键值对
         /// </summary>
@@ -377,7 +377,7 @@ namespace CSRedis
         /// <param name="pattern">模式</param>
         /// <param name="count">数量</param>
         /// <returns></returns>
-        async public Task<RedisScan<(string field, string value)>> HScanAsync(string key, long cursor, string pattern = null, long? count = null)
+        public async Task<RedisScan<(string field, string value)>> HScanAsync(string key, long cursor, string pattern = null, long? count = null)
         {
             var scan = await ExecuteScalarAsync(key, (c, k) => c.Value.HScanAsync(k, cursor, pattern, count));
             return new RedisScan<(string, string)>(scan.Cursor, scan.Items.Select(z => (z.Item1, z.Item2)).ToArray());
@@ -391,7 +391,7 @@ namespace CSRedis
         /// <param name="pattern">模式</param>
         /// <param name="count">数量</param>
         /// <returns></returns>
-        async public Task<RedisScan<(string field, T value)>> HScanAsync<T>(string key, long cursor, string pattern = null, long? count = null)
+        public async Task<RedisScan<(string field, T value)>> HScanAsync<T>(string key, long cursor, string pattern = null, long? count = null)
         {
             var scan = await ExecuteScalarAsync(key, (c, k) => c.Value.HScanBytesAsync(k, cursor, pattern, count));
             return new RedisScan<(string, T)>(scan.Cursor, scan.Items.Select(z => (z.Item1, this.DeserializeRedisValueInternal<T>(z.Item2))).ToArray());

@@ -280,7 +280,7 @@ namespace CSRedis
         /// <param name="destKey">不含prefix前辍</param>
         /// <param name="keys">不含prefix前辍</param>
         /// <returns>保存到 destkey 的长度，和输入 key 中最长的长度相等</returns>
-        async public Task<long> BitOpAsync(RedisBitOp op, string destKey, params string[] keys)
+        public async Task<long> BitOpAsync(RedisBitOp op, string destKey, params string[] keys)
         {
             if (string.IsNullOrEmpty(destKey)) throw new Exception("destKey 不能为空");
             if (keys == null || keys.Length == 0) throw new Exception("keys 不能为空");
@@ -307,7 +307,7 @@ namespace CSRedis
         /// <typeparam name="T">byte[] 或其他类型</typeparam>
         /// <param name="key">不含prefix前辍</param>
         /// <returns></returns>
-        async public Task<T> GetAsync<T>(string key) => this.DeserializeRedisValueInternal<T>(await ExecuteScalarAsync(key, (c, k) => c.Value.GetBytesAsync(k)));
+        public async Task<T> GetAsync<T>(string key) => this.DeserializeRedisValueInternal<T>(await ExecuteScalarAsync(key, (c, k) => c.Value.GetBytesAsync(k)));
         /// <summary>
         /// 对 key 所储存的值，获取指定偏移量上的位(bit)
         /// </summary>
@@ -331,7 +331,7 @@ namespace CSRedis
         /// <param name="start">开始位置，0表示第一个元素，-1表示最后一个元素</param>
         /// <param name="end">结束位置，0表示第一个元素，-1表示最后一个元素</param>
         /// <returns></returns>
-        async public Task<T> GetRangeAsync<T>(string key, long start, long end) => this.DeserializeRedisValueInternal<T>(await ExecuteScalarAsync(key, (c, k) => c.Value.GetRangeBytesAsync(k, start, end)));
+        public async Task<T> GetRangeAsync<T>(string key, long start, long end) => this.DeserializeRedisValueInternal<T>(await ExecuteScalarAsync(key, (c, k) => c.Value.GetRangeBytesAsync(k, start, end)));
         /// <summary>
         /// 将给定 key 的值设为 value ，并返回 key 的旧值(old value)
         /// </summary>
@@ -350,7 +350,7 @@ namespace CSRedis
         /// <param name="key">不含prefix前辍</param>
         /// <param name="value">值</param>
         /// <returns></returns>
-        async public Task<T> GetSetAsync<T>(string key, object value)
+        public async Task<T> GetSetAsync<T>(string key, object value)
         {
             var args = this.SerializeRedisValueInternal(value);
             return this.DeserializeRedisValueInternal<T>(await ExecuteScalarAsync(key, (c, k) => c.Value.GetSetBytesAsync(k, args)));
@@ -381,7 +381,7 @@ namespace CSRedis
         /// <typeparam name="T">byte[] 或其他类型</typeparam>
         /// <param name="keys">不含prefix前辍</param>
         /// <returns></returns>
-        async public Task<T[]> MGetAsync<T>(params string[] keys) => this.DeserializeRedisValueArrayInternal<T>(await ExecuteArrayAsync(keys, (c, k) => c.Value.MGetBytesAsync(k)));
+        public async Task<T[]> MGetAsync<T>(params string[] keys) => this.DeserializeRedisValueArrayInternal<T>(await ExecuteArrayAsync(keys, (c, k) => c.Value.MGetBytesAsync(k)));
         /// <summary>
         /// 同时设置一个或多个 key-value 对
         /// </summary>
@@ -430,7 +430,7 @@ namespace CSRedis
         /// <param name="expireSeconds">过期(秒单位)</param>
         /// <param name="exists">Nx, Xx</param>
         /// <returns></returns>
-        async public Task<bool> SetAsync(string key, object value, int expireSeconds = -1, RedisExistence? exists = null)
+        public async Task<bool> SetAsync(string key, object value, int expireSeconds = -1, RedisExistence? exists = null)
         {
             object redisValule = this.SerializeRedisValueInternal(value);
             if (expireSeconds <= 0 && exists == null) return await ExecuteScalarAsync(key, (c, k) => c.Value.SetAsync(k, redisValule)) == "OK";
@@ -439,7 +439,7 @@ namespace CSRedis
             if (expireSeconds > 0 && exists != null) return await ExecuteScalarAsync(key, (c, k) => c.Value.SetAsync(k, redisValule, expireSeconds, exists)) == "OK";
             return false;
         }
-        async public Task<bool> SetAsync(string key, object value, TimeSpan expire, RedisExistence? exists = null)
+        public async Task<bool> SetAsync(string key, object value, TimeSpan expire, RedisExistence? exists = null)
         {
             object redisValule = this.SerializeRedisValueInternal(value);
             if (expire <= TimeSpan.Zero && exists == null) return await ExecuteScalar(key, (c, k) => c.Value.SetAsync(k, redisValule)) == "OK";

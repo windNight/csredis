@@ -156,7 +156,7 @@ namespace CSRedis
         /// <param name="timeoutSeconds">缓存秒数</param>
         /// <param name="getDataAsync">获取源数据的函数</param>
         /// <returns></returns>
-        async public Task<T> CacheShellAsync<T>(string key, int timeoutSeconds, Func<Task<T>> getDataAsync)
+        public async Task<T> CacheShellAsync<T>(string key, int timeoutSeconds, Func<Task<T>> getDataAsync)
         {
             if (timeoutSeconds == 0) return await getDataAsync();
             var cacheValue = await GetAsync(key);
@@ -185,7 +185,7 @@ namespace CSRedis
         /// <param name="timeoutSeconds">缓存秒数</param>
         /// <param name="getDataAsync">获取源数据的函数</param>
         /// <returns></returns>
-        async public Task<T> CacheShellAsync<T>(string key, string field, int timeoutSeconds, Func<Task<T>> getDataAsync)
+        public async Task<T> CacheShellAsync<T>(string key, string field, int timeoutSeconds, Func<Task<T>> getDataAsync)
         {
             if (timeoutSeconds == 0) return await getDataAsync();
             var cacheValue = await HGetAsync(key, field);

@@ -249,7 +249,7 @@ namespace CSRedis
         /// <param name="key">不含prefix前辍</param>
         /// <param name="members">一个或多个成员</param>
         /// <returns></returns>
-        async public Task<long> SAddAsync<T>(string key, params T[] members)
+        public async Task<long> SAddAsync<T>(string key, params T[] members)
         {
             if (members == null || members.Any() == false) return 0;
             var args = members.Select(z => this.SerializeRedisValueInternal(z)).ToArray();
@@ -273,7 +273,7 @@ namespace CSRedis
         /// <typeparam name="T">byte[] 或其他类型</typeparam>
         /// <param name="keys">不含prefix前辍</param>
         /// <returns></returns>
-        async public Task<T[]> SDiffAsync<T>(params string[] keys) => this.DeserializeRedisValueArrayInternal<T>(await NodesNotSupportAsync(keys, new byte[0][], (c, k) => c.Value.SDiffBytesAsync(k)));
+        public async Task<T[]> SDiffAsync<T>(params string[] keys) => this.DeserializeRedisValueArrayInternal<T>(await NodesNotSupportAsync(keys, new byte[0][], (c, k) => c.Value.SDiffBytesAsync(k)));
         /// <summary>
         /// 返回给定所有集合的差集并存储在 destination 中
         /// </summary>
@@ -293,7 +293,7 @@ namespace CSRedis
         /// <typeparam name="T">byte[] 或其他类型</typeparam>
         /// <param name="keys">不含prefix前辍</param>
         /// <returns></returns>
-        async public Task<T[]> SInterAsync<T>(params string[] keys) => this.DeserializeRedisValueArrayInternal<T>(await NodesNotSupportAsync(keys, new byte[0][], (c, k) => c.Value.SInterBytesAsync(k)));
+        public async Task<T[]> SInterAsync<T>(params string[] keys) => this.DeserializeRedisValueArrayInternal<T>(await NodesNotSupportAsync(keys, new byte[0][], (c, k) => c.Value.SInterBytesAsync(k)));
         /// <summary>
         /// 返回给定所有集合的交集并存储在 destination 中
         /// </summary>
@@ -324,7 +324,7 @@ namespace CSRedis
         /// <typeparam name="T">byte[] 或其他类型</typeparam>
         /// <param name="key">不含prefix前辍</param>
         /// <returns></returns>
-        async public Task<T[]> SMembersAsync<T>(string key) => this.DeserializeRedisValueArrayInternal<T>(await ExecuteScalarAsync(key, (c, k) => c.Value.SMembersBytesAsync(k)));
+        public async Task<T[]> SMembersAsync<T>(string key) => this.DeserializeRedisValueArrayInternal<T>(await ExecuteScalarAsync(key, (c, k) => c.Value.SMembersBytesAsync(k)));
         /// <summary>
         /// 将 member 元素从 source 集合移动到 destination 集合
         /// </summary>
@@ -332,7 +332,7 @@ namespace CSRedis
         /// <param name="destination">目标无序集合key，不含prefix前辍</param>
         /// <param name="member">成员</param>
         /// <returns></returns>
-        async public Task<bool> SMoveAsync(string source, string destination, object member)
+        public async Task<bool> SMoveAsync(string source, string destination, object member)
         {
             string rule = string.Empty;
             if (Nodes.Count > 1)
@@ -364,7 +364,7 @@ namespace CSRedis
         /// <typeparam name="T">byte[] 或其他类型</typeparam>
         /// <param name="key">不含prefix前辍</param>
         /// <returns></returns>
-        async public Task<T> SPopAsync<T>(string key) => this.DeserializeRedisValueInternal<T>(await ExecuteScalarAsync(key, (c, k) => c.Value.SPopBytesAsync(k)));
+        public async Task<T> SPopAsync<T>(string key) => this.DeserializeRedisValueInternal<T>(await ExecuteScalarAsync(key, (c, k) => c.Value.SPopBytesAsync(k)));
         /// <summary>
         /// [redis-server 3.2] 移除并返回集合中的一个或多个随机元素
         /// </summary>
@@ -379,7 +379,7 @@ namespace CSRedis
         /// <param name="key">不含prefix前辍</param>
         /// <param name="count">移除并返回的个数</param>
         /// <returns></returns>
-        async public Task<T[]> SPopAsync<T>(string key, long count) => this.DeserializeRedisValueArrayInternal<T>(await ExecuteScalarAsync(key, (c, k) => c.Value.SPopBytesAsync(k, count)));
+        public async Task<T[]> SPopAsync<T>(string key, long count) => this.DeserializeRedisValueArrayInternal<T>(await ExecuteScalarAsync(key, (c, k) => c.Value.SPopBytesAsync(k, count)));
         /// <summary>
         /// 返回集合中的一个随机元素
         /// </summary>
@@ -392,7 +392,7 @@ namespace CSRedis
         /// <typeparam name="T">byte[] 或其他类型</typeparam>
         /// <param name="key">不含prefix前辍</param>
         /// <returns></returns>
-        async public Task<T> SRandMemberAsync<T>(string key) => this.DeserializeRedisValueInternal<T>(await ExecuteScalarAsync(key, (c, k) => c.Value.SRandMemberBytesAsync(k)));
+        public async Task<T> SRandMemberAsync<T>(string key) => this.DeserializeRedisValueInternal<T>(await ExecuteScalarAsync(key, (c, k) => c.Value.SRandMemberBytesAsync(k)));
         /// <summary>
         /// 返回集合中一个或多个随机数的元素
         /// </summary>
@@ -407,14 +407,14 @@ namespace CSRedis
         /// <param name="key">不含prefix前辍</param>
         /// <param name="count">返回个数</param>
         /// <returns></returns>
-        async public Task<T[]> SRandMembersAsync<T>(string key, int count = 1) => this.DeserializeRedisValueArrayInternal<T>(await ExecuteScalarAsync(key, (c, k) => c.Value.SRandMembersBytesAsync(k, count)));
+        public async Task<T[]> SRandMembersAsync<T>(string key, int count = 1) => this.DeserializeRedisValueArrayInternal<T>(await ExecuteScalarAsync(key, (c, k) => c.Value.SRandMembersBytesAsync(k, count)));
         /// <summary>
         /// 移除集合中一个或多个成员
         /// </summary>
         /// <param name="key">不含prefix前辍</param>
         /// <param name="members">一个或多个成员</param>
         /// <returns></returns>
-        async public Task<long> SRemAsync<T>(string key, params T[] members)
+        public async Task<long> SRemAsync<T>(string key, params T[] members)
         {
             if (members == null || members.Any() == false) return 0;
             var args = members.Select(z => this.SerializeRedisValueInternal(z)).ToArray();
@@ -432,7 +432,7 @@ namespace CSRedis
         /// <typeparam name="T">byte[] 或其他类型</typeparam>
         /// <param name="keys">不含prefix前辍</param>
         /// <returns></returns>
-        async public Task<T[]> SUnionAsync<T>(params string[] keys) => this.DeserializeRedisValueArrayInternal<T>(await NodesNotSupportAsync(keys, new byte[0][], (c, k) => c.Value.SUnionBytesAsync(k)));
+        public async Task<T[]> SUnionAsync<T>(params string[] keys) => this.DeserializeRedisValueArrayInternal<T>(await NodesNotSupportAsync(keys, new byte[0][], (c, k) => c.Value.SUnionBytesAsync(k)));
         /// <summary>
         /// 所有给定集合的并集存储在 destination 集合中
         /// </summary>
@@ -458,7 +458,7 @@ namespace CSRedis
         /// <param name="pattern">模式</param>
         /// <param name="count">数量</param>
         /// <returns></returns>
-        async public Task<RedisScan<T>> SScanAsync<T>(string key, long cursor, string pattern = null, long? count = null)
+        public async Task<RedisScan<T>> SScanAsync<T>(string key, long cursor, string pattern = null, long? count = null)
         {
             var scan = await ExecuteScalarAsync(key, (c, k) => c.Value.SScanBytesAsync(k, cursor, pattern, count));
             return new RedisScan<T>(scan.Cursor, this.DeserializeRedisValueArrayInternal<T>(scan.Items));

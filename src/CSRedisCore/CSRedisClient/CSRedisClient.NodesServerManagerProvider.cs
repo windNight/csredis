@@ -618,7 +618,7 @@ namespace CSRedis
             /// </summary>
             /// <param name="parameter">参数</param>
             /// <returns></returns>
-            async public Task<Dictionary<string, string>> ConfigGetAsync(string parameter) => (await _csredis.GetAndExecute(_pool, c => c.Value.ConfigGetAsync(parameter))).ToDictionary(z => z.Item1, y => y.Item2);
+            public async Task<Dictionary<string, string>> ConfigGetAsync(string parameter) => (await _csredis.GetAndExecute(_pool, c => c.Value.ConfigGetAsync(parameter))).ToDictionary(z => z.Item1, y => y.Item2);
             /// <summary>
             /// 对启动 Redis 服务器时所指定的 redis.conf 配置文件进行改写
             /// </summary>

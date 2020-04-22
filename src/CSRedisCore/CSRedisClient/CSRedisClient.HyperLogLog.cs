@@ -56,7 +56,7 @@ namespace CSRedis
         /// <param name="key">不含prefix前辍</param>
         /// <param name="elements">元素</param>
         /// <returns></returns>
-        async public Task<bool> PfAddAsync<T>(string key, params T[] elements)
+        public async Task<bool> PfAddAsync<T>(string key, params T[] elements)
         {
             if (elements == null || elements.Any() == false) return false;
             var args = elements.Select(z => this.SerializeRedisValueInternal(z)).ToArray();

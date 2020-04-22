@@ -105,7 +105,7 @@ namespace CSRedis
         /// </summary>
         /// <param name="sha1">脚本缓存的sha1</param>
         /// <returns></returns>
-        async public Task<bool[]> ScriptExistsAsync(params string[] sha1)
+        public async Task<bool[]> ScriptExistsAsync(params string[] sha1)
         {
             var ret = new List<bool>();
             foreach (var pool in Nodes.Values)
@@ -116,7 +116,7 @@ namespace CSRedis
         /// <summary>
         /// 清除所有分区节点中，所有 Lua 脚本缓存
         /// </summary>
-        async public Task ScriptFlushAsync()
+        public async Task ScriptFlushAsync()
         {
             foreach (var pool in Nodes.Values)
                 await GetAndExecuteAsync(pool, c => c.Value.ScriptFlushAsync());
@@ -125,7 +125,7 @@ namespace CSRedis
         /// <summary>
         /// 杀死所有分区节点中，当前正在运行的 Lua 脚本
         /// </summary>
-        async public Task ScriptKillAsync()
+        public async Task ScriptKillAsync()
         {
             foreach (var pool in Nodes.Values)
                 await GetAndExecuteAsync(pool, c => c.Value.ScriptKillAsync());
@@ -136,7 +136,7 @@ namespace CSRedis
         /// </summary>
         /// <param name="script">Lua 脚本</param>
         /// <returns></returns>
-        async public Task<string> ScriptLoadAsync(string script)
+        public async Task<string> ScriptLoadAsync(string script)
         {
             string sha1 = null;
             foreach (var pool in Nodes.Values)

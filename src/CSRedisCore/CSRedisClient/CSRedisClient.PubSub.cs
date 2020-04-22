@@ -670,7 +670,7 @@ return 0", $"CSRedisPSubscribe{psubscribeKey}", "", trylong.ToString());
         /// <param name="channel">频道名</param>
         /// <param name="message">消息文本</param>
         /// <returns></returns>
-        async public Task<long> PublishAsync(string channel, string message)
+        public async Task<long> PublishAsync(string channel, string message)
         {
             var msgid = await HIncrByAsync("csredisclient:Publish:msgid", channel, 1);
             return await ExecuteScalarAsync(channel, (c, k) => c.Value.PublishAsync(channel, $"{msgid}|{message}"));
@@ -687,7 +687,7 @@ return 0", $"CSRedisPSubscribe{psubscribeKey}", "", trylong.ToString());
         /// </summary>
         /// <param name="pattern"></param>
         /// <returns></returns>
-        async public Task<string[]> PubSubChannelsAsync(string pattern)
+        public async Task<string[]> PubSubChannelsAsync(string pattern)
         {
             var ret = new List<string>();
             foreach (var pool in Nodes.Values)
@@ -706,7 +706,7 @@ return 0", $"CSRedisPSubscribe{psubscribeKey}", "", trylong.ToString());
         /// <param name="channels">频道</param>
         /// <returns></returns>
         [Obsolete("分区模式下，其他客户端的订阅可能不会返回")]
-        async public Task<Dictionary<string, long>> PubSubNumSubAsync(params string[] channels) => (await ExecuteArrayAsync(channels, (c, k) =>
+        public async Task<Dictionary<string, long>> PubSubNumSubAsync(params string[] channels) => (await ExecuteArrayAsync(channels, (c, k) =>
         {
             var prefix = (c.Pool as RedisClientPool).Prefix;
             return c.Value.PubSubNumSubAsync(k.Select(z => string.IsNullOrEmpty(prefix) == false && z.StartsWith(prefix) ? z.Substring(prefix.Length) : z).ToArray());

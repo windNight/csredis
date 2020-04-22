@@ -105,7 +105,7 @@ namespace CSRedis.Internal
         }
 
 #if !net40
-        async public Task<T> CallAsync<T>(RedisCommand<T> command)
+        public async Task<T> CallAsync<T>(RedisCommand<T> command)
         {
             //if (_autoPipeline.IsEnabled)
             //	return _autoPipeline.EnqueueAsync(command);

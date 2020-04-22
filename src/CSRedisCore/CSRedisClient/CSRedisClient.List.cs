@@ -323,7 +323,7 @@ namespace CSRedis
         /// <param name="key">不含prefix前辍</param>
         /// <param name="index">索引</param>
         /// <returns></returns>
-        async public Task<T> LIndexAsync<T>(string key, long index) => this.DeserializeRedisValueInternal<T>(await ExecuteScalarAsync(key, (c, k) => c.Value.LIndexBytesAsync(k, index)));
+        public async Task<T> LIndexAsync<T>(string key, long index) => this.DeserializeRedisValueInternal<T>(await ExecuteScalarAsync(key, (c, k) => c.Value.LIndexBytesAsync(k, index)));
         /// <summary>
         /// 在列表中的元素前面插入元素
         /// </summary>
@@ -366,14 +366,14 @@ namespace CSRedis
         /// <typeparam name="T">byte[] 或其他类型</typeparam>
         /// <param name="key">不含prefix前辍</param>
         /// <returns></returns>
-        async public Task<T> LPopAsync<T>(string key) => this.DeserializeRedisValueInternal<T>(await ExecuteScalarAsync(key, (c, k) => c.Value.LPopBytesAsync(k)));
+        public async Task<T> LPopAsync<T>(string key) => this.DeserializeRedisValueInternal<T>(await ExecuteScalarAsync(key, (c, k) => c.Value.LPopBytesAsync(k)));
         /// <summary>
         /// 将一个或多个值插入到列表头部
         /// </summary>
         /// <param name="key">不含prefix前辍</param>
         /// <param name="value">一个或多个值</param>
         /// <returns>执行 LPUSH 命令后，列表的长度</returns>
-        async public Task<long> LPushAsync<T>(string key, params T[] value)
+        public async Task<long> LPushAsync<T>(string key, params T[] value)
         {
             if (value == null || value.Any() == false) return 0;
             var args = value.Select(z => this.SerializeRedisValueInternal(z)).ToArray();
@@ -406,7 +406,7 @@ namespace CSRedis
         /// <param name="start">开始位置，0表示第一个元素，-1表示最后一个元素</param>
         /// <param name="stop">结束位置，0表示第一个元素，-1表示最后一个元素</param>
         /// <returns></returns>
-        async public Task<T[]> LRangeAsync<T>(string key, long start, long stop) => this.DeserializeRedisValueArrayInternal<T>(await ExecuteScalarAsync(key, (c, k) => c.Value.LRangeBytesAsync(k, start, stop)));
+        public async Task<T[]> LRangeAsync<T>(string key, long start, long stop) => this.DeserializeRedisValueArrayInternal<T>(await ExecuteScalarAsync(key, (c, k) => c.Value.LRangeBytesAsync(k, start, stop)));
         /// <summary>
         /// 根据参数 count 的值，移除列表中与参数 value 相等的元素
         /// </summary>
@@ -426,7 +426,7 @@ namespace CSRedis
         /// <param name="index">索引</param>
         /// <param name="value">值</param>
         /// <returns></returns>
-        async public Task<bool> LSetAsync(string key, long index, object value)
+        public async Task<bool> LSetAsync(string key, long index, object value)
         {
             var args = this.SerializeRedisValueInternal(value);
             return await ExecuteScalar(key, (c, k) => c.Value.LSetAsync(k, index, args)) == "OK";
@@ -451,7 +451,7 @@ namespace CSRedis
         /// <typeparam name="T">byte[] 或其他类型</typeparam>
         /// <param name="key">不含prefix前辍</param>
         /// <returns></returns>
-        async public Task<T> RPopAsync<T>(string key) => this.DeserializeRedisValueInternal<T>(await ExecuteScalarAsync(key, (c, k) => c.Value.RPopBytesAsync(k)));
+        public async Task<T> RPopAsync<T>(string key) => this.DeserializeRedisValueInternal<T>(await ExecuteScalarAsync(key, (c, k) => c.Value.RPopBytesAsync(k)));
         /// <summary>
         /// 将列表 source 中的最后一个元素(尾元素)弹出，并返回给客户端。
         /// 将 source 弹出的元素插入到列表 destination ，作为 destination 列表的的头元素。
@@ -468,14 +468,14 @@ namespace CSRedis
         /// <param name="source">源key，不含prefix前辍</param>
         /// <param name="destination">目标key，不含prefix前辍</param>
         /// <returns></returns>
-        async public Task<T> RPopLPushAsync<T>(string source, string destination) => this.DeserializeRedisValueInternal<T>(await NodesNotSupportAsync(new[] { source, destination }, null, (c, k) => c.Value.RPopBytesLPushAsync(k.First(), k.Last())));
+        public async Task<T> RPopLPushAsync<T>(string source, string destination) => this.DeserializeRedisValueInternal<T>(await NodesNotSupportAsync(new[] { source, destination }, null, (c, k) => c.Value.RPopBytesLPushAsync(k.First(), k.Last())));
         /// <summary>
         /// 在列表中添加一个或多个值
         /// </summary>
         /// <param name="key">不含prefix前辍</param>
         /// <param name="value">一个或多个值</param>
         /// <returns>执行 RPUSH 命令后，列表的长度</returns>
-        async public Task<long> RPushAsync<T>(string key, params T[] value)
+        public async Task<long> RPushAsync<T>(string key, params T[] value)
         {
             if (value == null || value.Any() == false) return 0;
             var args = value.Select(z => this.SerializeRedisValueInternal(z)).ToArray();

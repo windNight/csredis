@@ -332,7 +332,7 @@ namespace CSRedis
         /// </summary>
         /// <param name="pattern">如：runoob*</param>
         /// <returns></returns>
-        async public Task<string[]> KeysAsync(string pattern)
+        public async Task<string[]> KeysAsync(string pattern)
         {
             List<string> ret = new List<string>();
             foreach (var pool in Nodes)
@@ -414,7 +414,7 @@ namespace CSRedis
         /// <param name="key">旧名称，不含prefix前辍</param>
         /// <param name="newKey">新名称，不含prefix前辍</param>
         /// <returns></returns>
-        async public Task<bool> RenameAsync(string key, string newKey)
+        public async Task<bool> RenameAsync(string key, string newKey)
         {
             string rule = string.Empty;
             if (Nodes.Count > 1)
@@ -495,7 +495,7 @@ namespace CSRedis
         /// </summary>
         /// <param name="key">不含prefix前辍</param>
         /// <returns></returns>
-        async public Task<KeyType> TypeAsync(string key) => Enum.TryParse(await ExecuteScalarAsync(key, (c, k) => c.Value.TypeAsync(k)), true, out KeyType tryenum) ? tryenum : KeyType.None;
+        public async Task<KeyType> TypeAsync(string key) => Enum.TryParse(await ExecuteScalarAsync(key, (c, k) => c.Value.TypeAsync(k)), true, out KeyType tryenum) ? tryenum : KeyType.None;
         /// <summary>
         /// 迭代当前数据库中的数据库键
         /// </summary>
@@ -512,7 +512,7 @@ namespace CSRedis
         /// <param name="pattern">模式</param>
         /// <param name="count">数量</param>
         /// <returns></returns>
-        async public Task<RedisScan<T>> ScanAsync<T>(long cursor, string pattern = null, long? count = null)
+        public async Task<RedisScan<T>> ScanAsync<T>(long cursor, string pattern = null, long? count = null)
         {
             var scan = await NodesNotSupportAsync("ScanAsync<T>", (c, k) => c.Value.ScanBytesAsync(cursor, pattern, count));
             return new RedisScan<T>(scan.Cursor, this.DeserializeRedisValueArrayInternal<T>(scan.Items));

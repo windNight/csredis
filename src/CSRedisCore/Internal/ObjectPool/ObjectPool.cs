@@ -353,7 +353,7 @@ namespace System
         }
 
 #if !net40
-        async public Task<Object<T>> GetAsync()
+        public async Task<Object<T>> GetAsync()
         {
 
             var obj = getFree(true);
