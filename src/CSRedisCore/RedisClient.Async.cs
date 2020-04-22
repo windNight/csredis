@@ -2376,7 +2376,7 @@ namespace CSRedis
             args.AddRange(members);
             return WriteAsync(new RedisArray.Strings("GEOHASH", args.ToArray()));
         }
-        async public Task<(decimal longitude, decimal latitude)?[]> GeoPosAsync(string key, object[] members)
+        public async Task<(decimal longitude, decimal latitude)?[]> GeoPosAsync(string key, object[] members)
         {
             if (members == null || members.Length == 0) throw new Exception("values 参数不能为空");
             var args = new List<object>();
@@ -2385,7 +2385,7 @@ namespace CSRedis
             var ret = await WriteAsync(new RedisArray.Generic<decimal[]>(new RedisArray.Generic<decimal>(new RedisFloat("GEOPOS", args.ToArray()))));
             return ret.Select(a => a != null && a.Length == 2 ? new (decimal, decimal)?((a[0], a[1])) : null).ToArray();
         }
-        async public Task<(string member, decimal dist, decimal longitude, decimal latitude, long hash)[]> GeoRadiusAsync(string key, decimal longitude, decimal latitude, decimal radius, GeoUnit unit = GeoUnit.m, long? count = null, GeoOrderBy? sorting = null, bool withCoord = false, bool withDist = false, bool withHash = false)
+        public async Task<(string member, decimal dist, decimal longitude, decimal latitude, long hash)[]> GeoRadiusAsync(string key, decimal longitude, decimal latitude, decimal radius, GeoUnit unit = GeoUnit.m, long? count = null, GeoOrderBy? sorting = null, bool withCoord = false, bool withDist = false, bool withHash = false)
         {
             var args = new List<object>(new object[] { key, longitude, latitude, radius, unit });
             if (withCoord) args.Add("WITHCOORD");
@@ -2402,7 +2402,7 @@ namespace CSRedis
             var ret = await WriteAsync(new RedisArray.Generic<Tuple<string, decimal, long, decimal[]>>(cmd));
             return ret.Select(a => (a.Item1, a.Item2, a.Item4 == null ? default(decimal) : a.Item4[0], a.Item4 == null ? default(decimal) : a.Item4[1], a.Item3)).ToArray();
         }
-        async public Task<(byte[] member, decimal dist, decimal longitude, decimal latitude, long hash)[]> GeoRadiusBytesAsync(string key, decimal longitude, decimal latitude, decimal radius, GeoUnit unit = GeoUnit.m, long? count = null, GeoOrderBy? sorting = null, bool withCoord = false, bool withDist = false, bool withHash = false)
+        public async Task<(byte[] member, decimal dist, decimal longitude, decimal latitude, long hash)[]> GeoRadiusBytesAsync(string key, decimal longitude, decimal latitude, decimal radius, GeoUnit unit = GeoUnit.m, long? count = null, GeoOrderBy? sorting = null, bool withCoord = false, bool withDist = false, bool withHash = false)
         {
             var args = new List<object>(new object[] { key, longitude, latitude, radius, unit });
             if (withCoord) args.Add("WITHCOORD");
@@ -2419,7 +2419,7 @@ namespace CSRedis
             var ret = await WriteAsync(new RedisArray.Generic<Tuple<byte[], decimal, long, decimal[]>>(cmd));
             return ret.Select(a => (a.Item1, a.Item2, a.Item4 == null ? default(decimal) : a.Item4[0], a.Item4 == null ? default(decimal) : a.Item4[1], a.Item3)).ToArray();
         }
-        async public Task<(string member, decimal dist, decimal longitude, decimal latitude, long hash)[]> GeoRadiusByMemberAsync(string key, object member, decimal radius, GeoUnit unit = GeoUnit.m, long? count = null, GeoOrderBy? sorting = null, bool withCoord = false, bool withDist = false, bool withHash = false)
+        public async Task<(string member, decimal dist, decimal longitude, decimal latitude, long hash)[]> GeoRadiusByMemberAsync(string key, object member, decimal radius, GeoUnit unit = GeoUnit.m, long? count = null, GeoOrderBy? sorting = null, bool withCoord = false, bool withDist = false, bool withHash = false)
         {
             var args = new List<object>(new object[] { key, member, radius, unit });
             if (withCoord) args.Add("WITHCOORD");
@@ -2436,7 +2436,7 @@ namespace CSRedis
             var ret = await WriteAsync(new RedisArray.Generic<Tuple<string, decimal, long, decimal[]>>(cmd));
             return ret.Select(a => (a.Item1, a.Item2, a.Item4 == null ? default(decimal) : a.Item4[0], a.Item4 == null ? default(decimal) : a.Item4[1], a.Item3)).ToArray();
         }
-        async public Task<(byte[] member, decimal dist, decimal longitude, decimal latitude, long hash)[]> GeoRadiusBytesByMemberAsync(string key, object member, decimal radius, GeoUnit unit = GeoUnit.m, long? count = null, GeoOrderBy? sorting = null, bool withCoord = false, bool withDist = false, bool withHash = false)
+        public async Task<(byte[] member, decimal dist, decimal longitude, decimal latitude, long hash)[]> GeoRadiusBytesByMemberAsync(string key, object member, decimal radius, GeoUnit unit = GeoUnit.m, long? count = null, GeoOrderBy? sorting = null, bool withCoord = false, bool withDist = false, bool withHash = false)
         {
             var args = new List<object>(new object[] { key, member, radius, unit });
             if (withCoord) args.Add("WITHCOORD");

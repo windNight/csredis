@@ -302,7 +302,7 @@ namespace CSRedis
         }
 #if net40
 #else
-        async public Task OnGetAsync(Object<RedisClient> obj)
+        public async Task OnGetAsync(Object<RedisClient> obj)
         {
             if (_pool.Encoding != obj.Value.Encoding) obj.Value.Encoding = _pool.Encoding;
             if (_pool.IsAvailable)

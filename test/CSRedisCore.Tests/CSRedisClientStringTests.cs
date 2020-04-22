@@ -27,7 +27,7 @@ namespace CSRedisCore.Tests {
 		}
 
 		[Fact]
-		async public Task AppendAsync()
+		public async Task AppendAsync()
 		{
 			var key = "TestAppendAsync_null";
 			await rds.SetAsync(key, base.String);

@@ -46,7 +46,7 @@ namespace CSRedis.Internal.IO
 
 #if net40
 #else
-        async public Task<int> WriteAsync(RedisCommand command)
+        public async Task<int> WriteAsync(RedisCommand command)
         {
             var data = _writer.Prepare(command);
             await Stream.WriteAsync(data, 0, data.Length);

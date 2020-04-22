@@ -36,7 +36,7 @@ namespace Microsoft.Extensions.Caching.Distributed {
 		/// <param name="cache"></param>
 		/// <param name="key">key</param>
 		/// <returns>对象</returns>
-		async public static Task<object> GetObjectAsync(this IDistributedCache cache, string key) {
+		public async static Task<object> GetObjectAsync(this IDistributedCache cache, string key) {
 			return Deserialize(await cache.GetAsync(key));
 		}
 		/// <summary>
@@ -46,7 +46,7 @@ namespace Microsoft.Extensions.Caching.Distributed {
 		/// <param name="cache"></param>
 		/// <param name="key">key</param>
 		/// <returns>对象</returns>
-		async public static Task<T> GetObjectAsync<T>(this IDistributedCache cache, string key) {
+		public async static Task<T> GetObjectAsync<T>(this IDistributedCache cache, string key) {
 			var obj = Deserialize(await cache.GetAsync(key));
 			if (obj == null) return default(T);
 			return (T)obj;

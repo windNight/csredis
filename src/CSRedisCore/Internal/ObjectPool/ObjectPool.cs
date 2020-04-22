@@ -354,7 +354,7 @@ namespace CSRedis.Internal.ObjectPool
 
 #if net40
 #else
-        async public Task<Object<T>> GetAsync()
+        public async Task<Object<T>> GetAsync()
         {
 
             var obj = getFree(true);
